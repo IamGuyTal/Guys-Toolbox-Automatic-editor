@@ -1,0 +1,105 @@
+:root {
+  --bg: #232323;
+  --surface: #2c2c2c;
+  --surface-2: #353535;
+  --border: #444;
+  --text: #e6e6e6;
+  --muted: #9a9a9a;
+  --accent: #4b8df8;
+  --ok: #3fb950;
+  --bad: #e5534b;
+  --radius: 6px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px -apple-system, "Segoe UI", Arial, sans-serif;
+  direction: rtl;
+}
+
+button {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.status { margin-bottom: 10px; font-size: 12px; color: var(--muted); }
+.status-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.dot.ok { background: var(--ok); }
+.dot.bad { background: var(--bad); }
+
+.row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.lbl { color: var(--muted); min-width: 92px; }
+.val { min-width: 18px; font-weight: 600; }
+.row input[type=range] { flex: 1; }
+.check { cursor: pointer; }
+
+.seg { display: flex; gap: 4px; }
+.seg button { padding: 3px 10px; font-size: 12px; }
+.seg button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.actions { display: flex; gap: 8px; margin-bottom: 10px; }
+.actions button { flex: 1; }
+
+.editor { min-height: 160px; }
+.empty { color: var(--muted); text-align: center; padding: 50px 0; }
+
+.cap { display: flex; gap: 10px; align-items: flex-start; padding: 6px 2px; border-bottom: 1px solid var(--border); }
+.cap:last-child { border-bottom: none; }
+.cap-time { font: 11px Menlo, monospace; color: var(--muted); direction: ltr; min-width: 92px; padding-top: 4px; cursor: pointer; }
+.cap-time:hover { color: var(--accent); }
+.cap-text { flex: 1; }
+.cap-line { display: flex; flex-wrap: wrap; gap: 3px; margin: 1px 0; }
+.cap.over { background: rgba(229, 83, 75, .08); }
+.cap.over .cap-time::after { content: ' · ארוך'; color: var(--bad); }
+.cap-side { flex: none; }
+
+.word { padding: 2px 6px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; user-select: none; }
+.word:hover { border-color: var(--border); background: var(--surface-2); }
+.word.ai { background: rgba(230, 180, 40, .18); border-color: rgba(230, 180, 40, .5); }
+.key { flex: 1; min-width: 0; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px; direction: ltr; }
+.link { color: var(--accent); font-size: 12px; white-space: nowrap; }
+.word.sel { border-color: var(--accent); background: rgba(75, 141, 248, .2); }
+.word-input { background: var(--bg); color: var(--text); border: 1px solid var(--accent); border-radius: 4px; padding: 2px 4px; font: inherit; }
+
+.editor-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.hint { font-size: 11px; color: var(--muted); }
+button.tool { padding: 2px 8px; font-size: 11px; }
+button.tool.dim { opacity: .4; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 0 8px; border-bottom: 1px solid var(--border); }
+
+.progress { display: none; position: relative; height: 22px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.progress.show { display: block; }
+.progress .bar { position: absolute; top: 0; bottom: 0; right: 0; width: 0; background: var(--accent); opacity: .35; transition: width .3s; }
+.progress span { position: relative; display: block; text-align: center; line-height: 20px; font-size: 12px; }
+button:disabled { opacity: .5; cursor: default; }
+
+.apply { width: 100%; padding: 9px; background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.toast {
+  position: fixed; bottom: 12px; left: 12px; right: 12px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 8px 10px; opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.status-row .tool { margin-inline-start: auto; }

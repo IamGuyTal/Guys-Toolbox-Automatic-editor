@@ -1,0 +1,10 @@
+# Signing certificate and password: private, never publish
+signing/
+
+# Local tools, downloads and build output (the .zxp goes to GitHub Releases)
+tools/
+vendor-downloads/
+dist/
+dev/
+
+.DS_Store

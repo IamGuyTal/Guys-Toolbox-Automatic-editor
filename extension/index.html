@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>Captions</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <section class="status" id="status">
+    <div class="status-row"><span class="dot" id="dot-premiere"></span><span id="txt-premiere">מתחבר לפרמייר…</span></div>
+    <div class="status-row"><span class="dot" id="dot-whisper"></span><span id="txt-whisper">בודק את Whisper…</span><button id="btn-download" class="tool" hidden>הורד</button></div>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <span class="lbl">מקור</span>
+      <div class="seg" data-setting="source">
+        <button data-value="sequence">כל הסיקוונס</button>
+        <button data-value="inout">In → Out</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl">שפה</span>
+      <div class="seg" data-setting="language">
+        <button data-value="he">עברית</button>
+        <button data-value="en">English</button>
+        <button data-value="auto">אוטומטי</button>
+      </div>
+    </div>
+    <div class="row">
+      <span class="lbl">מילים בכתובית</span>
+      <input type="range" min="1" max="10" step="1" data-setting="wordsPerCaption">
+      <span class="val" id="val-wordsPerCaption"></span>
+    </div>
+    <div class="row">
+      <span class="lbl">שורות</span>
+      <div class="seg" data-setting="lines">
+        <button data-value="1">1</button>
+        <button data-value="2">2</button>
+      </div>
+    </div>
+    <label class="row check"><input type="checkbox" data-setting="fillGaps"><span>ללא רווחים בין כתוביות</span></label>
+    <label class="row check"><input type="checkbox" data-setting="stripPunctuation"><span>ללא פיסוק</span></label>
+    <div class="row">
+      <span class="lbl">מפתח Gemini</span>
+      <input type="password" id="gemini-key" class="key" placeholder="AIza…" autocomplete="off">
+      <a href="#" id="gemini-link" class="link">קבל מפתח</a>
+    </div>
+  </section>
+
+  <section class="actions">
+    <button id="btn-transcribe" class="primary">תמלל</button>
+    <button id="btn-improve">שפר עם AI</button>
+  </section>
+
+  <div class="progress" id="progress"><div class="bar" id="progress-bar"></div><span id="progress-text"></span></div>
+
+  <section class="card editor" id="editor">
+    <div class="empty">הכתוביות יופיעו כאן אחרי התמלול</div>
+  </section>
+
+  <button id="btn-apply" class="apply">הכנס לפרמייר כ-Caption Track</button>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/platform.js"></script>
+  <script src="js/premiere.js"></script>
+  <script src="js/transcribe.js"></script>
+  <script src="js/captions.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/gemini.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
