@@ -1,5 +1,4 @@
-// Gemini API client for the "improve with AI" pass.
-// Proofreads the transcription in context and suggests natural caption breaks.
+// Gemini API client: JSON requests (captions "improve", reels), racing free-tier models.
 
 var Gemini = (function () {
   var API = 'generativelanguage.googleapis.com';
@@ -8,7 +7,7 @@ var Gemini = (function () {
   var RACE_SIZE = 4;
 
   // Returns the request so a caller can abort it. cb is called exactly once.
-  function request(method, apiPath, key, body, cb) {
+  function request(method, apiPath, key, body, cb, timeout) {
     var https = require('https');
     var data = body ? JSON.stringify(body) : null;
     var finished = false;
@@ -37,7 +36,7 @@ var Gemini = (function () {
     var timer = setTimeout(function () {
       done(new Error('Gemini לא ענה בזמן. ייתכן שהוא עמוס, נסה שוב בעוד דקה'));
       req.destroy();
-    }, REQUEST_TIMEOUT);
+    }, timeout || REQUEST_TIMEOUT);
     req.on('close', function () { clearTimeout(timer); });
     if (data) req.write(data);
     req.end();
@@ -111,30 +110,42 @@ var Gemini = (function () {
     required: ['corrections', 'breaks']
   };
 
-  function generate(model, opts, cb) {
+  // Gemini's schema dialect: upper-case types and no additionalProperties.
+  function geminiSchema(schema) {
+    if (Array.isArray(schema)) return schema.map(geminiSchema);
+    if (!schema || typeof schema !== 'object') return schema;
+    var out = {};
+    Object.keys(schema).forEach(function (k) {
+      if (k === 'additionalProperties') return;
+      out[k] = k === 'type' ? String(schema[k]).toUpperCase() : geminiSchema(schema[k]);
+    });
+    return out;
+  }
+
+  // req: { key, prompt, schema, timeout }; cb(err, parsedJson)
+  function generate(model, req, cb) {
     var body = {
-      contents: [{ role: 'user', parts: [{ text: buildPrompt(opts.words, opts.language, opts.maxWords) }] }],
-      generationConfig: { temperature: 0.1, responseMimeType: 'application/json', responseSchema: SCHEMA }
+      contents: [{ role: 'user', parts: [{ text: req.prompt }] }],
+      generationConfig: { temperature: 0.1, responseMimeType: 'application/json', responseSchema: geminiSchema(req.schema) }
     };
-    return request('POST', '/v1beta/models/' + model + ':generateContent', opts.key, body, function (err, res) {
+    return request('POST', '/v1beta/models/' + model + ':generateContent', req.key, body, function (err, res) {
       if (err) return cb(err);
       try {
         var parts = res.candidates[0].content.parts.filter(function (p) { return !p.thought; });
-        var out = JSON.parse(parts.map(function (p) { return p.text; }).join(''));
-        cb(null, { corrections: out.corrections || [], breaks: out.breaks || [], model: model });
+        cb(null, JSON.parse(parts.map(function (p) { return p.text; }).join('')));
       } catch (e) {
         cb(new Error('Gemini החזיר תשובה לא צפויה. נסה שוב'));
       }
-    });
+    }, req.timeout);
   }
 
   // Sends the request to several models at once and keeps the first good answer.
-  function race(models, opts, cb) {
+  function race(models, req, cb) {
     var pending = models.length;
     var won = false;
     var lastErr = null;
     var reqs = models.map(function (model) {
-      return generate(model, opts, function (err, result) {
+      return generate(model, req, function (err, data) {
         pending--;
         if (won) return;
         if (err) {
@@ -144,32 +155,40 @@ var Gemini = (function () {
         }
         won = true;
         reqs.forEach(function (r) { r.destroy(); });
-        cb(null, result);
+        cb(null, { data: data, model: model });
       });
     });
   }
 
   // Uses the model that worked last time; if it fails, races the newest models again.
-  function improve(opts, cb) {
+  // cb(err, { data, model })
+  function json(req, cb) {
     function remember(err, result) {
       if (err) return cb(err);
       localStorage.setItem('geminiModel', result.model);
       cb(null, result);
     }
     function raceAll() {
-      listModels(opts.key, function (err, models) {
+      listModels(req.key, function (err, models) {
         if (err) return cb(err);
-        race(models, opts, remember);
+        race(models, req, remember);
       });
     }
     var cached = localStorage.getItem('geminiModel');
     if (!cached) return raceAll();
-    generate(cached, opts, function (err, result) {
-      if (!err) return cb(null, result);
+    generate(cached, req, function (err, data) {
+      if (!err) return cb(null, { data: data, model: cached });
       localStorage.removeItem('geminiModel');
       raceAll();
     });
   }
 
-  return { improve: improve, buildPrompt: buildPrompt };
+  function improve(opts, cb) {
+    json({ key: opts.key, prompt: buildPrompt(opts.words, opts.language, opts.maxWords), schema: SCHEMA }, function (err, res) {
+      if (err) return cb(err);
+      cb(null, { corrections: res.data.corrections || [], breaks: res.data.breaks || [], model: res.model });
+    });
+  }
+
+  return { improve: improve, json: json, buildPrompt: buildPrompt };
 })();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Captions לפרמייר – מדריך התקנה</title>
+<title>Guy Tal Toolbox – מדריך התקנה</title>
 <style>
   :root { --bg: #ffffff; --text: #1d1d1f; --muted: #6e6e73; --card: #f5f5f7; --border: #d2d2d7; --accent: #2f6fde; --code: #eef0f3; }
   @media (prefers-color-scheme: dark) {
@@ -35,14 +35,14 @@
 <body>
 <main>
 
-<h1>Captions לפרמייר פרו</h1>
-<p class="lead">תוסף חינמי שמייצר כתוביות אוטומטיות בעברית ובאנגלית ומכניס אותן לטיימליין כ-Caption Track אמיתי, שאפשר לערוך ולעצב.</p>
+<h1>Guy Tal - Toolbox לפרמייר פרו</h1>
+<p class="lead">ארגז כלים חינמי לפרמייר פרו, בעברית ובאנגלית: כתוביות, הסרת שקטים, החלפת מצלמות בפודקאסט וחילוץ רילז.</p>
 
 <ul>
-  <li><b>תמלול על המחשב שלכם:</b> בחינם, בלי להעלות את הסרטון לשום מקום</li>
-  <li><b>עורך כתוביות:</b> הזזת מילים בין כתוביות, פיצול, מיזוג ותיקון טקסט</li>
-  <li><b>שיפור עם AI (לא חובה):</b> Gemini מתקן מילים שתומללו לא נכון ומחלק לפי משמעות</li>
-  <li><b>כתוביות חיות בפרמייר:</b> מעצבים עם ה-Track Style שלכם, ומקבלים גם קובץ SRT</li>
+  <li><b>כתוביות:</b> תמלול על המחשב שלכם, עורך כתוביות, והכנסה לטיימליין כ-Caption Track אמיתי</li>
+  <li><b>הסרת שקטים:</b> חותך את הקטעים השקטים בסרטון גלם, בלי לחתוך אף מילה</li>
+  <li><b>פודקאסט:</b> מחליף מצלמה לפי מי שמדבר (2–4 דוברים, עם שוט רחב)</li>
+  <li><b>רילז:</b> מוצא את הקטעים הכי חזקים בפרק ובונה מכל אחד סיקוונס אנכי 9:16</li>
 </ul>
 
 <p class="en"><a href="#english">English guide below ↓</a></p>
@@ -51,14 +51,14 @@
 <table>
   <tr><td>פרמייר פרו</td><td>גרסה 2025 ומעלה</td></tr>
   <tr><td>מחשב</td><td>מק עם מעבד Apple (M1/M2/M3/M4) או Windows 10/11</td></tr>
-  <tr><td>מקום פנוי</td><td>בערך 2GB לכל שפה (המודל יורד בפעם הראשונה)</td></tr>
+  <tr><td>מקום פנוי</td><td>בערך 2GB לכל שפה (מודל התמלול יורד בפעם הראשונה)</td></tr>
 </table>
 <p>מק עם מעבד Intel עדיין לא נתמך.</p>
 
 <h2>התקנה</h2>
 
 <h3>שלב 1: הורידו את התוסף</h3>
-<p>הורידו את הקובץ <code>Captions-1.0.1.zxp</code>.</p>
+<p>הורידו את הקובץ <code>Guy-Tal-Toolbox-1.1.0.zxp</code>.</p>
 
 <h3>שלב 2: התקינו אותו</h3>
 <div class="card">
@@ -66,91 +66,89 @@
   <ol>
     <li>הורידו והתקינו את <a href="https://aescripts.com/learn/zxp-installer/">ZXP Installer</a> (יש גרסה למק ול-Windows).</li>
     <li>סגרו את פרמייר.</li>
-    <li>פתחו את ZXP Installer וגררו לתוכו את הקובץ <code>Captions-1.0.1.zxp</code>.</li>
+    <li>פתחו את ZXP Installer וגררו לתוכו את קובץ ה-zxp.</li>
     <li>חכו להודעה שההתקנה הצליחה.</li>
   </ol>
+  <p>מי שהתקין גרסה קודמת (Captions) מקבל את ארגז הכלים כעדכון. המודלים שכבר הורדו נשארים.</p>
 </div>
 
 <details>
   <summary>דרך חלופית בלי תוכנה נוספת (שורת פקודה)</summary>
   <p>מי שמותקן אצלו Creative Cloud כבר יש לו את מתקין התוספים של אדובי. סגרו את פרמייר, ואז:</p>
-  <p><b>במק:</b> פתחו את Terminal, הדביקו את הפקודה, הוסיפו רווח, וגררו את קובץ ה-zxp לחלון. לחצו Enter.</p>
+  <p><b>במק:</b> פתחו את Terminal, הדביקו את הפקודה, הוסיפו רווח וגררו את קובץ ה-zxp לחלון. לחצו Enter.</p>
   <pre>"/Library/Application Support/Adobe/Adobe Desktop Common/RemoteComponents/UPI/UnifiedPluginInstallerAgent/UnifiedPluginInstallerAgent.app/Contents/MacOS/UnifiedPluginInstallerAgent" --install</pre>
-  <p><b>ב-Windows:</b> פתחו את Command Prompt, הדביקו את הפקודה, הוסיפו רווח, וגררו את קובץ ה-zxp לחלון. לחצו Enter.</p>
+  <p><b>ב-Windows:</b> פתחו את Command Prompt, הדביקו את הפקודה, הוסיפו רווח וגררו את קובץ ה-zxp לחלון. לחצו Enter.</p>
   <pre>"C:\Program Files\Common Files\Adobe\Adobe Desktop Common\RemoteComponents\UPI\UnifiedPluginInstallerAgent\UnifiedPluginInstallerAgent.exe" /install</pre>
 </details>
 
 <h3>שלב 3: פתחו בפרמייר</h3>
-<p>פתחו את פרמייר ובחרו בתפריט <b>Window ← Extensions ← Captions</b>.</p>
+<p>בתפריט: <b>Window ← Extensions ← Guy Tal - Toolbox</b>. מסך הבית מציג את ארבעת הכלים.</p>
 
 <h3>שלב 4: הורידו את מודל התמלול (פעם אחת)</h3>
-<p>בראש הפאנל תופיע ההודעה "צריך להוריד את המודל". לחצו <b>הורד</b>. המודל שוקל בערך 1.6GB וההורדה לוקחת כמה דקות. לעברית ולאנגלית יש מודלים נפרדים, והם יורדים לפי השפה שבוחרים.</p>
+<p>בכלי הכתוביות, בראש הפאנל תופיע ההודעה "צריך להוריד את המודל". לחצו <b>הורד</b>. המודל שוקל בערך 1.6GB. לעברית ולאנגלית יש מודלים נפרדים.</p>
 
-<h2>איך משתמשים</h2>
+<h2>הכלים</h2>
+
+<h3>כתוביות</h3>
 <ol>
-  <li>בחרו <b>שפה</b>, <b>מקור</b> (כל הסיקוונס, או רק בין In ל-Out שסימנתם), וכמה <b>מילים בכתובית</b>.</li>
-  <li>לחצו <b>תמלל</b>.</li>
-  <li>ערכו בפאנל:
-    <ul>
-      <li><b>לחיצה על מילה</b> בוחרת אותה ופותחת כלים: העברה לכתובית הקודמת או הבאה, פיצול, עריכה ומחיקה</li>
-      <li><b>לחיצה כפולה</b> פותחת את המילה לעריכה</li>
-      <li><b>לחיצה על הזמן</b> קופצת לנקודה הזו בטיימליין</li>
-      <li><b>בטל ↶</b> (או ⌘Z / Ctrl+Z) מבטל את הפעולה האחרונה</li>
-    </ul>
-  </li>
-  <li>(לא חובה) לחצו <b>שפר עם AI</b>. מילים שתוקנו יסומנו בצהוב.</li>
-  <li>לחצו <b>הכנס לפרמייר כ-Caption Track</b>.</li>
-  <li>לעיצוב: בחרו את כל הכתוביות בטראק, ובחלון Properties או Essential Graphics בחרו את ה-<b>Track Style</b> שלכם.</li>
+  <li>בחרו שפה, מקור (כל הסיקוונס או In → Out) וכמה מילים בכתובית, ולחצו <b>תמלל</b>.</li>
+  <li>ערכו בפאנל: לחיצה על מילה פותחת כלים, לחיצה כפולה עורכת, לחיצה על הזמן קופצת לטיימליין, ו-⌘Z / Ctrl+Z מבטל.</li>
+  <li>(לא חובה) <b>שפר עם AI</b> מתקן מילים שתומללו לא נכון. מילים שתוקנו מסומנות בצהוב.</li>
+  <li><b>הכנס לפרמייר כ-Caption Track</b>. לעיצוב, בחרו את כל הכתוביות ובחרו את ה-Track Style שלכם.</li>
 </ol>
 
-<h2>שיפור עם AI: מפתח Gemini חינמי (לא חובה)</h2>
+<h3>הסרת שקטים</h3>
 <ol>
-  <li>בפאנל, לחצו <b>"קבל מפתח"</b> ליד "מפתח Gemini" (או היכנסו ל-<a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>).</li>
-  <li>התחברו עם חשבון גוגל ולחצו <b>Create API key</b>.</li>
-  <li>העתיקו את המפתח (מתחיל ב-<code>AIza</code>) והדביקו בשדה בפאנל.</li>
+  <li>בחרו מקור והגדרות: סף שקט, שקט מינימלי, ו"אוויר" לפני ואחרי דיבור.</li>
+  <li>הגנה על מילים עם Whisper מוודאת שאף מילה לא נחתכת.</li>
+  <li><b>נתח שקטים</b>, עברו על הרשימה, ו<b>חתוך בפרמייר</b>.</li>
+  <li>החיתוך נעשה בעותק בשם "(silence cut)". המקור לא משתנה, ו<b>בטל שינויים</b> מוחק את העותק.</li>
 </ol>
+
+<h3>פודקאסט</h3>
+<ol>
+  <li>שייכו לכל דובר טראק מיקרופון וטראק מצלמה, ואם יש, טראק לשוט רחב.</li>
+  <li><b>נתח מי מדבר</b> מציג פס צבעוני של כל הפרק.</li>
+  <li><b>ערוך בפרמייר</b> יוצר עותק "(podcast edit)". שוטים שלא בשימוש מכובים, לא נמחקים.</li>
+</ol>
+
+<h3>רילז</h3>
+<ol>
+  <li>בחרו מקור ושפה. אם הגדרתם את כלי הפודקאסט, בחרו פוקוס: המרואיין, או כולם.</li>
+  <li><b>מצא רילז:</b> הפרק מתומלל וה-AI מחפש סיפורים שעומדים בפני עצמם.</li>
+  <li>עברו על הרשימה ובחרו. אפשר להסיר קטע או ריל שלם.</li>
+  <li><b>צור סיקוונסים</b>: כל ריל נבנה בתיקייה Reels, אנכי 9:16 כשהמקור רחב.</li>
+</ol>
+
+<h2>AI: ‏Gemini או Claude</h2>
+<p>את ספק ה-AI בוחרים בכרטיס <b>AI</b>, שמופיע בכתוביות וברילז.</p>
+<table>
+  <tr><td></td><td><b>Gemini</b></td><td><b>Claude</b></td></tr>
+  <tr><td>מחיר</td><td>חינם (עם מגבלת שימוש)</td><td>בתשלום לפי שימוש</td></tr>
+  <tr><td>שיפור כתוביות, 3 דקות</td><td>חינם</td><td>בערך 3–6 סנט</td></tr>
+  <tr><td>רילז מפרק של שעה</td><td>חינם</td><td>בערך 40 סנט</td></tr>
+  <tr><td>מפתח</td><td><a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a></td><td><a href="https://platform.claude.com/">platform.claude.com</a></td></tr>
+</table>
 <div class="card note">
-  המפתח נשמר רק אצלכם. בתוכנית החינמית Google עשויה להשתמש בטקסט שנשלח כדי לשפר את המודלים שלה. נשלח רק הטקסט של הכתוביות, ורק כשלוחצים על הכפתור.<br>
-  לפעמים Gemini עמוס. אם מופיעה הודעה שלקח לו יותר מדי זמן, לחצו שוב.
+  המפתחות נשמרים רק אצלכם. נשלח רק הטקסט, אף פעם לא האודיו או הווידאו, ורק כשלוחצים על הכפתור. בתוכנית החינמית Google עשויה להשתמש בטקסט כדי לשפר את המודלים שלה. אם Gemini עמוס, לחצו שוב.
 </div>
 
 <h2>בעיות נפוצות</h2>
-
-<h3>לא רואים את Captions בתפריט Extensions</h3>
+<h3>לא רואים את התוסף בתפריט Extensions</h3>
 <p>סגרו את פרמייר לגמרי (⌘Q במק, Alt+F4 ב-Windows) ופתחו מחדש. אם עדיין לא מופיע, התקינו שוב את קובץ ה-zxp.</p>
-
 <h3>במק: הודעה ש-whisper-cli לא יכול להיפתח</h3>
-<p>פתחו <b>System Settings ← Privacy &amp; Security</b>, גללו למטה ולחצו <b>Open Anyway</b> ליד whisper-cli. נסו לתמלל שוב.</p>
-
+<p>פתחו <b>System Settings ← Privacy &amp; Security</b>, גללו למטה ולחצו <b>Open Anyway</b> ליד whisper-cli.</p>
 <h3>ב-Windows: התמלול איטי</h3>
-<p>ב-Windows התמלול רץ על המעבד ולא על הכרטיס הגרפי, אז הוא לוקח יותר זמן, תלוי במחשב. בסרטונים ארוכים כדאי לתמלל קטעים עם In/Out.</p>
-
+<p>ב-Windows התמלול רץ על המעבד. בפרקים ארוכים כדאי לעבוד על קטעים עם In/Out.</p>
 <h3>ב-Windows: האנטי-וירוס חוסם</h3>
 <p>התוסף מריץ את Whisper (<code>whisper-cli.exe</code>) מתוך תיקיית התוסף. אם האנטי-וירוס חוסם אותו, אשרו אותו.</p>
-
-<h3>הכתוביות לא מדויקות</h3>
-<p>ודאו שבחרתם את השפה הנכונה לפני התמלול. מודל העברית מיועד לעברית בלבד.</p>
+<h3>יש טראקים נעולים</h3>
+<p>הסרת שקטים ופודקאסט לא עובדים על טראקים נעולים. פתחו את הנעילה ונסו שוב.</p>
 
 <h2>הסרה</h2>
 <ul>
-  <li><b>התוסף:</b> ב-ZXP Installer בחרו את Captions ולחצו Remove. או מחקו את התיקייה <code>Captions</code> מתוך:
-    <ul>
-      <li>מק: <code>/Library/Application Support/Adobe/CEP/extensions/</code></li>
-      <li>Windows: <code>C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\</code></li>
-    </ul>
-  </li>
-  <li><b>המודלים (בערך 3GB):</b> מחקו את התיקייה:
-    <ul>
-      <li>מק: <code>~/Library/Application Support/PremiereCaptions</code></li>
-      <li>Windows: <code>%APPDATA%\PremiereCaptions</code></li>
-    </ul>
-  </li>
-</ul>
-
-<h2>פרטיות</h2>
-<ul>
-  <li>האודיו מתומלל על המחשב שלכם ולא נשלח לשום מקום.</li>
-  <li>אם לוחצים "שפר עם AI", רק הטקסט של הכתוביות נשלח ל-Google Gemini.</li>
+  <li><b>התוסף:</b> ב-ZXP Installer בחרו את Guy Tal - Toolbox ולחצו Remove.</li>
+  <li><b>המודלים (בערך 3GB):</b> מחקו את התיקייה <code>~/Library/Application Support/PremiereCaptions</code> (מק) או <code>%APPDATA%\PremiereCaptions</code> (Windows).</li>
 </ul>
 
 <h2>קרדיטים</h2>
@@ -162,26 +160,30 @@
 
 <section class="en" id="english" dir="ltr">
 <h2>English</h2>
-<p>A free Premiere Pro extension that auto-generates Hebrew and English captions and adds them to your timeline as a real, editable Caption Track.</p>
-<h3>Requirements</h3>
-<p>Premiere Pro 2025 or newer. Mac with Apple Silicon, or Windows 10/11 (Intel Macs are not supported yet). About 2 GB free per language.</p>
+<p>A free Premiere Pro toolbox for Hebrew and English: captions, silence removal, podcast camera switching and reels extraction.</p>
 <h3>Install</h3>
 <ol>
-  <li>Download <code>Captions-1.0.1.zxp</code>.</li>
-  <li>Quit Premiere and install with the free <a href="https://aescripts.com/learn/zxp-installer/">ZXP Installer</a> (drag the file in).</li>
-  <li>Open Premiere and choose <b>Window → Extensions → Captions</b>.</li>
-  <li>Click <b>Download</b> next to the model status (about 1.6 GB, once per language).</li>
+  <li>Download <code>Guy-Tal-Toolbox-1.1.0.zxp</code>.</li>
+  <li>Quit Premiere and install it with the free <a href="https://aescripts.com/learn/zxp-installer/">ZXP Installer</a> (drag the file in).</li>
+  <li>Open Premiere and choose <b>Window → Extensions → Guy Tal - Toolbox</b>.</li>
+  <li>In Captions, click <b>Download</b> next to the model status (about 1.6 GB, once per language).</li>
 </ol>
-<h3>Use</h3>
-<p>Choose language, source (whole sequence or In→Out) and words per caption, then <b>Transcribe</b>, edit, optionally <b>Improve with AI</b>, and <b>Insert into Premiere as Caption Track</b>.</p>
+<h3>The tools</h3>
+<ul>
+  <li><b>Captions:</b> transcribe, edit, optionally improve with AI, insert as a Caption Track.</li>
+  <li><b>Silence removal:</b> analyse, review, cut. Works on a copy; Undo deletes it.</li>
+  <li><b>Podcast:</b> map speakers to mic and camera tracks, analyse, edit. Works on a copy.</li>
+  <li><b>Reels:</b> find reels, review them, create vertical sequences in a "Reels" bin.</li>
+</ul>
+<h3>AI</h3>
+<p>Pick Gemini (free) or Claude (paid per use). Only text is sent, never audio or video, and only when you click the button.</p>
 <h3>Troubleshooting</h3>
 <ul>
   <li><b>Panel missing:</b> fully quit and reopen Premiere, or reinstall the zxp.</li>
   <li><b>Mac blocks whisper-cli:</b> System Settings → Privacy &amp; Security → Open Anyway.</li>
-  <li><b>Slow on Windows:</b> Windows runs on the CPU; transcribe In→Out ranges for long videos.</li>
+  <li><b>Slow on Windows:</b> Windows runs on the CPU; work on In→Out ranges for long episodes.</li>
+  <li><b>Locked tracks:</b> unlock them before silence removal or podcast edits.</li>
 </ul>
-<h3>Privacy</h3>
-<p>Audio is transcribed locally and never uploaded. Only caption text is sent to Google Gemini, and only when you click "Improve with AI".</p>
 </section>
 
 </main>

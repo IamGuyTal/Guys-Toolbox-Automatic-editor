@@ -10,12 +10,14 @@ var Transcriber = (function () {
   var WORK_DIR = path.join(os.tmpdir(), 'premiere-captions');
   var presetPath = null;
 
-  function exportAudio(useInOut, cb) {
+  // soloTrack: export only this audio track (index), or undefined for the full mix.
+  function exportAudio(useInOut, cb, soloTrack) {
     var preset = presetPath || (presetPath = Platform.findPreset());
     if (!preset) return cb(new Error('לא נמצא preset לייצוא אודיו בפרמייר'));
     fs.mkdirSync(WORK_DIR, { recursive: true });
     var wav = path.join(WORK_DIR, 'audio-' + Date.now() + '.wav');
-    Premiere.call('exportAudio', [wav, preset, useInOut], function (err, res) {
+    var call = soloTrack === undefined ? ['exportAudio', [wav, preset, useInOut]] : ['exportSoloAudio', [wav, preset, useInOut, soloTrack]];
+    Premiere.call(call[0], call[1], function (err, res) {
       if (err) return cb(err);
       if (!fs.existsSync(wav)) return cb(new Error('ייצוא האודיו מפרמייר נכשל'));
       cb(null, { wav: wav, offset: res.offset });

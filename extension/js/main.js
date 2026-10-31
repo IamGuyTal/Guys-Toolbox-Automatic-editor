@@ -9,7 +9,8 @@ var DEFAULTS = {
   wordsPerCaption: 3,
   lines: '1',
   fillGaps: true,
-  stripPunctuation: true
+  stripPunctuation: true,
+  aiProvider: 'gemini'
 };
 
 var settings = loadSettings();
@@ -35,6 +36,7 @@ var REBUILD_SETTINGS = ['wordsPerCaption', 'lines'];
 function saveSettings(key) {
   localStorage.setItem('settings', JSON.stringify(settings));
   if (key === 'language') return checkWhisper();
+  if (key === 'aiProvider') return showAiKeyRow();
   if (!state.words) return;
   if (REBUILD_SETTINGS.indexOf(key) >= 0) {
     if (state.edited) {
@@ -87,21 +89,28 @@ function applyToPremiere() {
 }
 
 // Sends the current (possibly hand-edited) words to Gemini for proofreading and phrasing.
+// AI providers for "improve": both share the same improve(opts, cb) interface.
+var AI_PROVIDERS = {
+  gemini: { name: 'Gemini', client: function () { return Gemini; }, keyName: 'geminiKey', input: 'gemini-key' },
+  claude: { name: 'Claude', client: function () { return Claude; }, keyName: 'claudeKey', input: 'claude-key' }
+};
+
 function improve() {
   if (busy) return;
   if (!state.captions.length) return toast('קודם תמלל את הסיקוונס');
-  var key = (localStorage.getItem('geminiKey') || '').trim();
+  var provider = AI_PROVIDERS[settings.aiProvider];
+  var key = (localStorage.getItem(provider.keyName) || '').trim();
   if (!key) {
-    document.getElementById('gemini-key').focus();
-    return toast('הדבק מפתח Gemini בהגדרות');
+    document.getElementById(provider.input).focus();
+    return toast('הדבק מפתח ' + provider.name + ' בהגדרות');
   }
 
   var words = [];
   state.captions.forEach(function (c) { words = words.concat(c.words); });
 
   setBusy(true);
-  setProgress(50, 'Gemini עובר על הטקסט…');
-  Gemini.improve({
+  setProgress(50, provider.name + ' עובר על הטקסט…');
+  provider.client().improve({
     key: key,
     words: words,
     language: settings.language,
@@ -116,22 +125,35 @@ function improve() {
     Editor.render();
     setBusy(false);
     setProgress(null);
-    toast(res.changed ? 'Gemini תיקן ' + res.changed + ' מילים (מסומנות בצהוב). "בטל" מחזיר' : 'Gemini לא מצא מה לתקן, רק סידר את החלוקה');
+    var costText = result.cost ? ' · עלות: $' + result.cost.toFixed(3) : '';
+    toast((res.changed ? provider.name + ' תיקן ' + res.changed + ' מילים (מסומנות בצהוב). "בטל" מחזיר' : provider.name + ' לא מצא מה לתקן, רק סידר את החלוקה') + costText);
   });
 }
 
-function bindGeminiKey() {
-  var input = document.getElementById('gemini-key');
-  input.value = localStorage.getItem('geminiKey') || '';
-  input.addEventListener('change', function () {
-    localStorage.setItem('geminiKey', input.value.trim());
-    localStorage.removeItem('geminiModel');
-    toast(input.value.trim() ? 'המפתח נשמר' : 'המפתח נמחק');
+function bindAiSettings() {
+  Object.keys(AI_PROVIDERS).forEach(function (id) {
+    var p = AI_PROVIDERS[id];
+    var input = document.getElementById(p.input);
+    input.value = localStorage.getItem(p.keyName) || '';
+    input.addEventListener('change', function () {
+      localStorage.setItem(p.keyName, input.value.trim());
+      if (id === 'gemini') localStorage.removeItem('geminiModel');
+      toast(input.value.trim() ? 'מפתח ' + p.name + ' נשמר' : 'מפתח ' + p.name + ' נמחק');
+    });
   });
-  document.getElementById('gemini-link').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.cep.util.openURLInDefaultBrowser('https://aistudio.google.com/apikey');
+  document.querySelectorAll('[data-open]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.cep.util.openURLInDefaultBrowser(a.dataset.open);
+    });
   });
+  showAiKeyRow();
+}
+
+// Only the key field of the selected provider is shown.
+function showAiKeyRow() {
+  document.getElementById('row-gemini-key').hidden = settings.aiProvider !== 'gemini';
+  document.getElementById('row-claude-key').hidden = settings.aiProvider !== 'claude';
 }
 
 function seek(seconds) {
@@ -294,7 +316,7 @@ document.getElementById('btn-download').addEventListener('click', downloadModel)
 
 Editor.init({ state: state, settings: settings, onSeek: seek });
 bindSettings();
-bindGeminiKey();
+bindAiSettings();
 Platform.prepareBinary();
 checkWhisper();
 checkPremiere();

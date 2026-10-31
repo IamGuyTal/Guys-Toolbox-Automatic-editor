@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="7.0" ExtensionBundleId="com.guyt.captions" ExtensionBundleVersion="1.0.1" ExtensionBundleName="Captions">
+<ExtensionManifest Version="7.0" ExtensionBundleId="com.guyt.captions" ExtensionBundleVersion="1.1.0" ExtensionBundleName="Guy Tal - Toolbox">
   <ExtensionList>
-    <Extension Id="com.guyt.captions.panel" Version="1.0.1" />
+    <Extension Id="com.guyt.captions.panel" Version="1.1.0" />
   </ExtensionList>
   <ExecutionEnvironment>
     <HostList>
@@ -30,7 +30,7 @@
         </Lifecycle>
         <UI>
           <Type>Panel</Type>
-          <Menu>Captions</Menu>
+          <Menu>Guy Tal - Toolbox</Menu>
           <Geometry>
             <Size><Height>700</Height><Width>380</Width></Size>
             <MinSize><Height>300</Height><Width>280</Width></MinSize>

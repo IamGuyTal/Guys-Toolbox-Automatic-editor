@@ -10,7 +10,7 @@ CERT="$CERT_DIR/cert.p12"
 PASS_FILE="$CERT_DIR/password.txt"
 STAGE="$ROOT/dist/stage"
 VERSION="$(sed -n 's/.*ExtensionBundleVersion="\([^"]*\)".*/\1/p' "$ROOT/extension/CSXS/manifest.xml")"
-OUT="$ROOT/dist/Captions-$VERSION.zxp"
+OUT="$ROOT/dist/Guy-Tal-Toolbox-$VERSION.zxp"
 
 chmod +x "$SIGN"
 

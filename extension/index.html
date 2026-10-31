@@ -2,65 +2,269 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <title>Captions</title>
+  <title>Guy Tal - Toolbox</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <header class="topbar">
+    <button id="btn-home" class="back" hidden>→ כלים</button>
+    <span class="topbar-title" id="topbar-title">Guy Tal - Toolbox</span>
+  </header>
+
   <section class="status" id="status">
     <div class="status-row"><span class="dot" id="dot-premiere"></span><span id="txt-premiere">מתחבר לפרמייר…</span></div>
-    <div class="status-row"><span class="dot" id="dot-whisper"></span><span id="txt-whisper">בודק את Whisper…</span><button id="btn-download" class="tool" hidden>הורד</button></div>
   </section>
 
-  <section class="card">
-    <div class="row">
-      <span class="lbl">מקור</span>
-      <div class="seg" data-setting="source">
-        <button data-value="sequence">כל הסיקוונס</button>
-        <button data-value="inout">In → Out</button>
-      </div>
-    </div>
-    <div class="row">
-      <span class="lbl">שפה</span>
-      <div class="seg" data-setting="language">
-        <button data-value="he">עברית</button>
-        <button data-value="en">English</button>
-        <button data-value="auto">אוטומטי</button>
-      </div>
-    </div>
-    <div class="row">
-      <span class="lbl">מילים בכתובית</span>
-      <input type="range" min="1" max="10" step="1" data-setting="wordsPerCaption">
-      <span class="val" id="val-wordsPerCaption"></span>
-    </div>
-    <div class="row">
-      <span class="lbl">שורות</span>
-      <div class="seg" data-setting="lines">
-        <button data-value="1">1</button>
-        <button data-value="2">2</button>
-      </div>
-    </div>
-    <label class="row check"><input type="checkbox" data-setting="fillGaps"><span>ללא רווחים בין כתוביות</span></label>
-    <label class="row check"><input type="checkbox" data-setting="stripPunctuation"><span>ללא פיסוק</span></label>
-    <div class="row">
-      <span class="lbl">מפתח Gemini</span>
-      <input type="password" id="gemini-key" class="key" placeholder="AIza…" autocomplete="off">
-      <a href="#" id="gemini-link" class="link">קבל מפתח</a>
+  <!-- Home: pick a tool -->
+  <section class="view" id="view-home">
+    <div class="tools">
+      <button class="tool-card" data-tool="captions">
+        <span class="tool-icon">CC</span>
+        <span class="tool-text"><b>כתוביות</b><small>תמלול ועריכת כתוביות לטיימליין</small></span>
+      </button>
+      <button class="tool-card" data-tool="silence">
+        <span class="tool-icon">✂</span>
+        <span class="tool-text"><b>הסרת שקטים</b><small>סרטון אחד, מדבר למצלמה</small></span>
+      </button>
+      <button class="tool-card" data-tool="podcast">
+        <span class="tool-icon">◫</span>
+        <span class="tool-text"><b>פודקאסט</b><small>החלפת מצלמות לפי מי שמדבר</small></span>
+      </button>
+      <button class="tool-card" data-tool="reels">
+        <span class="tool-icon">▶</span>
+        <span class="tool-text"><b>רילז</b><small>חילוץ קטעים ויראליים מפרק מלא</small></span>
+      </button>
     </div>
   </section>
 
-  <section class="actions">
-    <button id="btn-transcribe" class="primary">תמלל</button>
-    <button id="btn-improve">שפר עם AI</button>
+  <!-- Captions tool -->
+  <section class="view" id="view-captions" hidden>
+    <div class="status">
+      <div class="status-row"><span class="dot" id="dot-whisper"></span><span id="txt-whisper">בודק את Whisper…</span><button id="btn-download" class="tool" hidden>הורד</button></div>
+    </div>
+
+    <section class="card">
+      <div class="row">
+        <span class="lbl">מקור</span>
+        <div class="seg" data-setting="source">
+          <button data-value="sequence">כל הסיקוונס</button>
+          <button data-value="inout">In → Out</button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="lbl">שפה</span>
+        <div class="seg" data-setting="language">
+          <button data-value="he">עברית</button>
+          <button data-value="en">English</button>
+          <button data-value="auto">אוטומטי</button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="lbl">מילים בכתובית</span>
+        <input type="range" min="1" max="10" step="1" data-setting="wordsPerCaption">
+        <span class="val" id="val-wordsPerCaption"></span>
+      </div>
+      <div class="row">
+        <span class="lbl">שורות</span>
+        <div class="seg" data-setting="lines">
+          <button data-value="1">1</button>
+          <button data-value="2">2</button>
+        </div>
+      </div>
+      <label class="row check"><input type="checkbox" data-setting="fillGaps"><span>ללא רווחים בין כתוביות</span></label>
+      <label class="row check"><input type="checkbox" data-setting="stripPunctuation"><span>ללא פיסוק</span></label>
+    </section>
+
+    <div class="ai-slot"></div>
+
+    <section class="actions">
+      <button id="btn-transcribe" class="primary">תמלל</button>
+      <button id="btn-improve">שפר עם AI</button>
+    </section>
+
+    <section class="card editor" id="editor">
+      <div class="empty">הכתוביות יופיעו כאן אחרי התמלול</div>
+    </section>
+
+    <button id="btn-apply" class="apply">הכנס לפרמייר כ-Caption Track</button>
   </section>
+
+  <!-- Silence removal tool -->
+  <section class="view" id="view-silence" hidden>
+    <section class="card">
+      <div class="row">
+        <span class="lbl">מקור</span>
+        <div class="seg" data-silence="source">
+          <button data-value="sequence">כל הסיקוונס</button>
+          <button data-value="inout">In → Out</button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="lbl">סף שקט</span>
+        <label class="check"><input type="checkbox" data-silence="autoThreshold"> אוטומטי</label>
+        <input type="range" min="-60" max="-20" step="1" data-silence="threshold">
+        <span class="val" data-silence-val="threshold"></span>
+      </div>
+      <div class="row">
+        <span class="lbl">שקט מינימלי</span>
+        <input type="range" min="0.3" max="2" step="0.1" data-silence="minSilence">
+        <span class="val" data-silence-val="minSilence"></span>
+      </div>
+      <div class="row">
+        <span class="lbl">אוויר לפני דיבור</span>
+        <input type="range" min="0" max="0.5" step="0.05" data-silence="padBefore">
+        <span class="val" data-silence-val="padBefore"></span>
+      </div>
+      <div class="row">
+        <span class="lbl">אוויר אחרי דיבור</span>
+        <input type="range" min="0" max="0.5" step="0.05" data-silence="padAfter">
+        <span class="val" data-silence-val="padAfter"></span>
+      </div>
+      <label class="row check"><input type="checkbox" data-silence="protectWords"><span>הגנה על מילים עם Whisper (לא חותך אף מילה)</span></label>
+      <div class="row" data-silence-row="language">
+        <span class="lbl">שפה</span>
+        <div class="seg" data-silence="language">
+          <button data-value="he">עברית</button>
+          <button data-value="en">English</button>
+          <button data-value="auto">אוטומטי</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button id="btn-silence-analyze" class="primary">נתח שקטים</button>
+    </section>
+
+    <section class="card" id="silence-results">
+      <div class="empty">השקטים שיימצאו יופיעו כאן לאישור</div>
+    </section>
+
+    <button id="btn-silence-cut" class="apply">חתוך בפרמייר</button>
+    <button id="btn-silence-undo" class="undo" hidden>בטל שינויים</button>
+  </section>
+
+  <!-- Podcast multicam tool -->
+  <section class="view" id="view-podcast" hidden>
+    <section class="card">
+      <div class="editor-head">
+        <b>דוברים</b>
+        <button class="tool" id="btn-podcast-tracks">רענן טראקים</button>
+      </div>
+      <div class="speaker-grid" id="podcast-speakers"></div>
+      <div class="row">
+        <button class="tool" id="btn-podcast-add">+ דובר</button>
+      </div>
+      <div class="row">
+        <span class="lbl">שוט רחב</span>
+        <select id="podcast-wide" class="sel"></select>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <span class="lbl">מקור</span>
+        <div class="seg" data-podcast="source">
+          <button data-value="sequence">כל הסיקוונס</button>
+          <button data-value="inout">In → Out</button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="lbl">שוט מינימלי</span>
+        <input type="range" min="1" max="6" step="0.5" data-podcast="minShot">
+        <span class="val" data-podcast-val="minShot"></span>
+      </div>
+      <div class="row">
+        <span class="lbl">התעלם מתגובות עד</span>
+        <input type="range" min="0.4" max="3" step="0.1" data-podcast="minTurn">
+        <span class="val" data-podcast-val="minTurn"></span>
+      </div>
+      <label class="row check"><input type="checkbox" data-podcast="wideOnOverlap"><span>שוט רחב כשמדברים יחד</span></label>
+      <div class="row">
+        <span class="lbl">רחב לגיוון כל</span>
+        <input type="range" min="0" max="60" step="5" data-podcast="varietyEvery">
+        <span class="val" data-podcast-val="varietyEvery"></span>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button id="btn-podcast-analyze" class="primary">נתח מי מדבר</button>
+    </section>
+
+    <section class="card" id="podcast-results">
+      <div class="empty">תוכנית השוטים תופיע כאן לפני החיתוך</div>
+    </section>
+
+    <button id="btn-podcast-apply" class="apply">ערוך בפרמייר</button>
+    <button id="btn-podcast-undo" class="undo" hidden>בטל שינויים</button>
+  </section>
+
+  <!-- Reels tool -->
+  <section class="view" id="view-reels" hidden>
+    <section class="card">
+      <div class="row">
+        <span class="lbl">מקור</span>
+        <div class="seg" data-reels="source">
+          <button data-value="sequence">כל הסיקוונס</button>
+          <button data-value="inout">In → Out</button>
+        </div>
+      </div>
+      <div class="row">
+        <span class="lbl">שפה</span>
+        <div class="seg" data-reels="language">
+          <button data-value="he">עברית</button>
+          <button data-value="en">English</button>
+          <button data-value="auto">אוטומטי</button>
+        </div>
+      </div>
+      <label class="row check"><input type="checkbox" data-reels="useSpeakers"><span>זיהוי דוברים לפי הגדרות כלי הפודקאסט</span></label>
+      <div class="row" data-reels-row="focus">
+        <span class="lbl">פוקוס</span>
+        <div class="seg" data-reels="focus">
+          <button data-value="guest">המרואיין</button>
+          <button data-value="all">כולם</button>
+        </div>
+        <select class="sel" id="reels-guest"></select>
+      </div>
+      <label class="row check"><input type="checkbox" data-reels="vertical"><span>צור סיקוונס אנכי 9:16 כשהמקור רחב</span></label>
+    </section>
+
+    <div class="ai-slot"></div>
+
+    <section class="actions">
+      <button id="btn-reels-find" class="primary">מצא רילז</button>
+    </section>
+
+    <section class="card" id="reels-results">
+      <div class="empty">הרילז שיימצאו יופיעו כאן לבחירה</div>
+    </section>
+
+    <button id="btn-reels-create" class="apply">צור סיקוונסים לרילז שנבחרו</button>
+  </section>
+
+  <!-- Shared AI settings; moved into the open tool's .ai-slot -->
+  <div hidden>
+    <section class="card" id="ai-card">
+      <div class="row">
+        <span class="lbl">AI</span>
+        <div class="seg" data-setting="aiProvider">
+          <button data-value="gemini">Gemini · חינם</button>
+          <button data-value="claude">Claude · בתשלום</button>
+        </div>
+      </div>
+      <div class="row" id="row-gemini-key">
+        <span class="lbl">מפתח Gemini</span>
+        <input type="password" id="gemini-key" class="key" placeholder="AIza…" autocomplete="off">
+        <a href="#" class="link" data-open="https://aistudio.google.com/apikey">קבל מפתח</a>
+      </div>
+      <div class="row" id="row-claude-key">
+        <span class="lbl">מפתח Claude</span>
+        <input type="password" id="claude-key" class="key" placeholder="sk-ant-…" autocomplete="off">
+        <a href="#" class="link" data-open="https://platform.claude.com/">קבל מפתח</a>
+      </div>
+    </section>
+  </div>
 
   <div class="progress" id="progress"><div class="bar" id="progress-bar"></div><span id="progress-text"></span></div>
-
-  <section class="card editor" id="editor">
-    <div class="empty">הכתוביות יופיעו כאן אחרי התמלול</div>
-  </section>
-
-  <button id="btn-apply" class="apply">הכנס לפרמייר כ-Caption Track</button>
-
   <div class="toast" id="toast"></div>
 
   <script src="js/platform.js"></script>
@@ -69,6 +273,15 @@
   <script src="js/captions.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/gemini.js"></script>
+  <script src="js/claude.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/seqcopy.js"></script>
+  <script src="js/silence.js"></script>
+  <script src="js/silence-ui.js"></script>
+  <script src="js/podcast.js"></script>
+  <script src="js/podcast-ui.js"></script>
+  <script src="js/reels.js"></script>
+  <script src="js/reels-ui.js"></script>
+  <script src="js/home.js"></script>
 </body>
 </html>
