@@ -25,6 +25,8 @@
 
 מק עם מעבד Intel עדיין לא נתמך.
 
+ב-Windows כלי הכתוביות נבדק. שאר הכלים עדיין לא נבדקו שם. אם נתקלתם בבעיה, דווחו עליה ב-[Issues](https://github.com/IamGuyTal/Premiere-Captions-extension-english-hebrew/issues).
+
 ---
 
 ## התקנה
@@ -165,6 +167,7 @@ Transcription runs on your computer; nothing is uploaded. Reels and caption impr
 ## Requirements
 - Premiere Pro 2025 or newer
 - Mac with Apple Silicon, or Windows 10/11 (Intel Macs are not supported yet)
+- On Windows, the Captions tool has been tested. The other tools have not been tested there yet. If you run into a problem, please report it in [Issues](https://github.com/IamGuyTal/Premiere-Captions-extension-english-hebrew/issues).
 - About 2 GB free per language (the model downloads on first use)
 
 ## Install
