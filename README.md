@@ -1,6 +1,56 @@
+# Guy's Toolbox - Automatic editor
+
+A free toolbox for Adobe Premiere Pro.
+
+[עברית למטה ↓](#hebrew)
+
+Works in Hebrew and English, with four tools in one panel:
+
+- **Captions:** local transcription, a caption editor, and a real, editable Caption Track.
+- **Silence removal:** finds and cuts the silent parts of raw footage without cutting a single word.
+- **Podcast:** switches cameras automatically to whoever is speaking (2–4 speakers, optional wide shot).
+- **Reels:** reads a full episode, finds the strongest stand-alone stories and builds each one as a vertical 9:16 sequence.
+
+Transcription runs on your computer; nothing is uploaded. Reels and caption improvement use the AI of your choice: Gemini (free) or Claude (paid per use).
+
+## Requirements
+- Premiere Pro 2025 or newer
+- Mac with Apple Silicon, or Windows 10/11 (Intel Macs are not supported yet)
+- On Windows, the Captions tool has been tested. The other tools have not been tested there yet. If you run into a problem, please report it in [Issues](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/issues).
+- About 2 GB free per language (the model downloads on first use)
+
+## Install
+1. Download **`Guy-Tal-Toolbox-1.1.0.zxp`** from the [latest release](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/releases/latest).
+2. Quit Premiere and install it with the free [ZXP Installer](https://aescripts.com/learn/zxp-installer/) (drag the file in), or with Adobe's built-in installer:
+   - **Mac:** `"/Library/Application Support/Adobe/Adobe Desktop Common/RemoteComponents/UPI/UnifiedPluginInstallerAgent/UnifiedPluginInstallerAgent.app/Contents/MacOS/UnifiedPluginInstallerAgent" --install <path-to-zxp>`
+   - **Windows:** `"C:\Program Files\Common Files\Adobe\Adobe Desktop Common\RemoteComponents\UPI\UnifiedPluginInstallerAgent\UnifiedPluginInstallerAgent.exe" /install <path-to-zxp>`
+3. Open Premiere → **Window → Extensions → Guy Tal - Toolbox**.
+4. In Captions, click **Download** next to the model status (about 1.6 GB, once per language).
+
+## The tools
+- **Captions:** transcribe → edit → optionally Improve with AI → Insert into Premiere as Caption Track.
+- **Silence removal:** analyse → review the list → cut. Cuts happen in a copy ("(silence cut)"); Undo deletes it.
+- **Podcast:** map each speaker to a mic track and a camera track → analyse → edit. Works on a copy ("(podcast edit)"); unused shots are disabled, not deleted.
+- **Reels:** find reels → review titles, hooks and pieces → create sequences in a "Reels" bin (vertical when the source is landscape).
+
+## AI
+Pick Gemini (free) or Claude (paid per use) in the AI card. Rough Claude costs: about $0.03–0.06 to improve captions for a 3-minute video, about $0.40 for reels from a one-hour episode. Only text is sent, never audio or video, and only when you click the button.
+
+## Troubleshooting
+- **Panel missing:** fully quit and reopen Premiere; reinstall the zxp if needed.
+- **Mac blocks `whisper-cli`:** System Settings → Privacy & Security → Open Anyway.
+- **Slow on Windows:** Windows runs on the CPU; work on In→Out ranges for long episodes.
+- **Locked tracks:** unlock them before silence removal or podcast edits.
+
+## Credits
+[whisper.cpp](https://github.com/ggml-org/whisper.cpp) (MIT) · OpenAI Whisper large-v3-turbo (MIT) · [ivrit.ai](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml) Hebrew model (Apache 2.0)
+
+---
+
+<a name="hebrew"></a>
 <div dir="rtl">
 
-# Guy Tal - Toolbox לפרמייר פרו
+# Guy's Toolbox - Automatic editor (עברית)
 
 ארגז כלים חינמי לפרמייר פרו, בעברית ובאנגלית. ארבעה כלים בפאנל אחד:
 
@@ -10,8 +60,6 @@
 - ▶ **רילז:** עובר על פרק שלם, מוצא את הקטעים הכי חזקים ובונה מכל אחד סיקוונס אנכי 9:16.
 
 התמלול רץ על המחשב שלכם ולא מעלה את הסרטון לשום מקום. כלי הרילז ושיפור הכתוביות משתמשים ב-AI לבחירתכם: **Gemini** (חינם) או **Claude** (בתשלום, לפי שימוש).
-
-[English below ↓](#english)
 
 ---
 
@@ -25,14 +73,14 @@
 
 מק עם מעבד Intel עדיין לא נתמך.
 
-ב-Windows כלי הכתוביות נבדק. שאר הכלים עדיין לא נבדקו שם. אם נתקלתם בבעיה, דווחו עליה ב-[Issues](https://github.com/IamGuyTal/Premiere-Captions-extension-english-hebrew/issues).
+ב-Windows כלי הכתוביות נבדק. שאר הכלים עדיין לא נבדקו שם. אם נתקלתם בבעיה, דווחו עליה ב-[Issues](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/issues).
 
 ---
 
 ## התקנה
 
 ### שלב 1: הורידו את התוסף
-היכנסו ל-[**דף ההורדות**](https://github.com/IamGuyTal/Premiere-Captions-extension-english-hebrew/releases/latest) והורידו את הקובץ **`Guy-Tal-Toolbox-1.1.0.zxp`** (תחת Assets). שם יש גם מדריך התקנה שנפתח בדפדפן: `install-guide.html`.
+היכנסו ל-[**דף ההורדות**](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/releases/latest) והורידו את הקובץ **`Guy-Tal-Toolbox-1.1.0.zxp`** (תחת Assets). שם יש גם מדריך התקנה שנפתח בדפדפן: `install-guide.html`.
 
 ### שלב 2: התקינו אותו
 
@@ -149,49 +197,3 @@
 - מודל העברית של [ivrit.ai](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml) (Apache 2.0)
 
 </div>
-
----
-
-<a name="english"></a>
-# Guy Tal - Toolbox for Premiere Pro (English)
-
-A free Premiere Pro toolbox for Hebrew and English, with four tools in one panel:
-
-- **Captions:** local transcription, a caption editor, and a real, editable Caption Track.
-- **Silence removal:** finds and cuts the silent parts of raw footage without cutting a single word.
-- **Podcast:** switches cameras automatically to whoever is speaking (2–4 speakers, optional wide shot).
-- **Reels:** reads a full episode, finds the strongest stand-alone stories and builds each one as a vertical 9:16 sequence.
-
-Transcription runs on your computer; nothing is uploaded. Reels and caption improvement use the AI of your choice: Gemini (free) or Claude (paid per use).
-
-## Requirements
-- Premiere Pro 2025 or newer
-- Mac with Apple Silicon, or Windows 10/11 (Intel Macs are not supported yet)
-- On Windows, the Captions tool has been tested. The other tools have not been tested there yet. If you run into a problem, please report it in [Issues](https://github.com/IamGuyTal/Premiere-Captions-extension-english-hebrew/issues).
-- About 2 GB free per language (the model downloads on first use)
-
-## Install
-1. Download **`Guy-Tal-Toolbox-1.1.0.zxp`** from the [latest release](https://github.com/IamGuyTal/Premiere-Captions-extension-english-hebrew/releases/latest).
-2. Quit Premiere and install it with the free [ZXP Installer](https://aescripts.com/learn/zxp-installer/) (drag the file in), or with Adobe's built-in installer:
-   - **Mac:** `"/Library/Application Support/Adobe/Adobe Desktop Common/RemoteComponents/UPI/UnifiedPluginInstallerAgent/UnifiedPluginInstallerAgent.app/Contents/MacOS/UnifiedPluginInstallerAgent" --install <path-to-zxp>`
-   - **Windows:** `"C:\Program Files\Common Files\Adobe\Adobe Desktop Common\RemoteComponents\UPI\UnifiedPluginInstallerAgent\UnifiedPluginInstallerAgent.exe" /install <path-to-zxp>`
-3. Open Premiere → **Window → Extensions → Guy Tal - Toolbox**.
-4. In Captions, click **Download** next to the model status (about 1.6 GB, once per language).
-
-## The tools
-- **Captions:** transcribe → edit → optionally Improve with AI → Insert into Premiere as Caption Track.
-- **Silence removal:** analyse → review the list → cut. Cuts happen in a copy ("(silence cut)"); Undo deletes it.
-- **Podcast:** map each speaker to a mic track and a camera track → analyse → edit. Works on a copy ("(podcast edit)"); unused shots are disabled, not deleted.
-- **Reels:** find reels → review titles, hooks and pieces → create sequences in a "Reels" bin (vertical when the source is landscape).
-
-## AI
-Pick Gemini (free) or Claude (paid per use) in the AI card. Rough Claude costs: about $0.03–0.06 to improve captions for a 3-minute video, about $0.40 for reels from a one-hour episode. Only text is sent, never audio or video, and only when you click the button.
-
-## Troubleshooting
-- **Panel missing:** fully quit and reopen Premiere; reinstall the zxp if needed.
-- **Mac blocks `whisper-cli`:** System Settings → Privacy & Security → Open Anyway.
-- **Slow on Windows:** Windows runs on the CPU; work on In→Out ranges for long episodes.
-- **Locked tracks:** unlock them before silence removal or podcast edits.
-
-## Credits
-[whisper.cpp](https://github.com/ggml-org/whisper.cpp) (MIT) · OpenAI Whisper large-v3-turbo (MIT) · [ivrit.ai](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml) Hebrew model (Apache 2.0)
