@@ -20,7 +20,7 @@ Transcription runs on your computer; nothing is uploaded. Reels and caption impr
 - About 2 GB free per language (the model downloads on first use)
 
 ## Install
-1. Download **`Guy-Tal-Toolbox-1.1.0.zxp`** from the [latest release](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/releases/latest).
+1. Download **`Guy-Tal-Toolbox-1.1.1.zxp`** from the [latest release](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/releases/latest).
 2. Quit Premiere and install it with the free [ZXP Installer](https://aescripts.com/learn/zxp-installer/) (drag the file in), or with Adobe's built-in installer:
    - **Mac:** `"/Library/Application Support/Adobe/Adobe Desktop Common/RemoteComponents/UPI/UnifiedPluginInstallerAgent/UnifiedPluginInstallerAgent.app/Contents/MacOS/UnifiedPluginInstallerAgent" --install <path-to-zxp>`
    - **Windows:** `"C:\Program Files\Common Files\Adobe\Adobe Desktop Common\RemoteComponents\UPI\UnifiedPluginInstallerAgent\UnifiedPluginInstallerAgent.exe" /install <path-to-zxp>`
@@ -28,7 +28,7 @@ Transcription runs on your computer; nothing is uploaded. Reels and caption impr
 4. In Captions, click **Download** next to the model status (about 1.6 GB, once per language).
 
 ## The tools
-- **Captions:** transcribe → edit → optionally Improve with AI → Insert into Premiere as Caption Track.
+- **Captions:** transcribe → edit → optionally Improve with AI → Insert into Premiere as Caption Track. You can also download the transcript as a .txt file, with timestamps or as plain text.
 - **Silence removal:** analyse → review the list → cut. Cuts happen in a copy ("(silence cut)"); Undo deletes it.
 - **Podcast:** map each speaker to a mic track and a camera track → analyse → edit. Works on a copy ("(podcast edit)"); unused shots are disabled, not deleted.
 - **Reels:** find reels → review titles, hooks and pieces → create sequences in a "Reels" bin (vertical when the source is landscape).
@@ -80,7 +80,7 @@ Pick Gemini (free) or Claude (paid per use) in the AI card. Rough Claude costs: 
 ## התקנה
 
 ### שלב 1: הורידו את התוסף
-היכנסו ל-[**דף ההורדות**](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/releases/latest) והורידו את הקובץ **`Guy-Tal-Toolbox-1.1.0.zxp`** (תחת Assets). שם יש גם מדריך התקנה שנפתח בדפדפן: `install-guide.html`.
+היכנסו ל-[**דף ההורדות**](https://github.com/IamGuyTal/Guys-Toolbox-Automatic-editor/releases/latest) והורידו את הקובץ **`Guy-Tal-Toolbox-1.1.1.zxp`** (תחת Assets). שם יש גם מדריך התקנה שנפתח בדפדפן: `install-guide.html`.
 
 ### שלב 2: התקינו אותו
 
@@ -123,6 +123,7 @@ Pick Gemini (free) or Claude (paid per use) in the AI card. Rough Claude costs: 
 2. ערכו בפאנל: לחיצה על מילה פותחת כלים (העברה לכתובית הקודמת או הבאה, פיצול, עריכה, מחיקה), לחיצה כפולה עורכת, לחיצה על הזמן קופצת לטיימליין, ו-⌘Z / Ctrl+Z מבטל.
 3. (לא חובה) **שפר עם AI** מתקן מילים שתומללו לא נכון. מילים שתוקנו מסומנות בצהוב.
 4. **הכנס לפרמייר כ-Caption Track**. לעיצוב, בחרו את כל הכתוביות ובחרו את ה-Track Style שלכם.
+5. (לא חובה) **הורד תמלול** שומר את כל התמלול כקובץ טקסט, אחרי השיפור והעריכות: **עם זמנים** או **טקסט בלבד**.
 
 ### ✂️ הסרת שקטים
 לסרטון גלם אחד עם סאונד מסונכרן.

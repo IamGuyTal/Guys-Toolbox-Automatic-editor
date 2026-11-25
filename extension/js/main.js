@@ -15,8 +15,9 @@ var DEFAULTS = {
 
 var settings = loadSettings();
 
-// Current transcription. offset = where the audio starts in the sequence (seconds).
-var state = { words: null, offset: 0, captions: [] };
+// Current transcription. offset = where the audio starts in the sequence (seconds);
+// sequence = the sequence it was made from ({ id, name }).
+var state = { words: null, offset: 0, captions: [], sequence: null };
 var sequenceInfo = null;
 var busy = false;
 
@@ -67,9 +68,30 @@ function safeName(name) {
   return String(name || 'sequence').replace(/[\/\\:*?"<>|]/g, '_').slice(0, 60);
 }
 
+// Results always belong to the sequence they were made from. Before acting on the timeline,
+// make sure that sequence is still the one open; otherwise ask the user to switch back or redo.
+function isActiveSequence(target) {
+  if (!target) return true;
+  if (sequenceInfo && sequenceInfo.id === target.id) return true;
+  toast('התוצאות שייכות לסיקוונס "' + target.name + '". פתח אותו בטיימליין, או הרץ שוב על הסיקוונס הנוכחי');
+  return false;
+}
+
+// Shown when "In → Out" is chosen but the open sequence has no In/Out marks.
+function inOutHint() {
+  var name = sequenceInfo && sequenceInfo.sequence ? '"' + sequenceInfo.sequence + '"' : 'הפתוח';
+  return 'אין טווח In/Out בתוך הסיקוונס ' + name + ', אז הכלי עובד על כל הסיקוונס';
+}
+
+// The sequence a tool is about to work on: the one open in the timeline right now.
+function currentSequence() {
+  return sequenceInfo && sequenceInfo.id ? { id: sequenceInfo.id, name: sequenceInfo.sequence } : null;
+}
+
 function applyToPremiere() {
   if (busy) return;
   if (!state.captions.length) return toast('קודם תמלל את הסיקוונס');
+  if (!isActiveSequence(state.sequence)) return;
   setBusy(true);
   Premiere.call('getProjectPath', [], function (err, res) {
     if (err) return fail(err);
@@ -156,6 +178,33 @@ function showAiKeyRow() {
   document.getElementById('row-claude-key').hidden = settings.aiProvider !== 'claude';
 }
 
+// Saves the transcript (after AI and manual edits) as a .txt file the user picks.
+function exportTranscript(withTimes) {
+  if (busy) return;
+  if (!state.captions.length) return toast('קודם תמלל את הסיקוונס');
+  var text = Captions.toTranscript(state.captions, state.offset, withTimes);
+  var base = safeName(state.sequence ? state.sequence.name : 'transcript') + (withTimes ? ' - transcript (timestamps).txt' : ' - transcript.txt');
+  Premiere.call('getProjectPath', [], function (err, res) {
+    var dir = !err && res.path ? path.dirname(res.path) : require('os').homedir();
+    var file = null;
+    try {
+      var picked = window.cep.fs.showSaveDialogEx('שמירת תמלול', dir, ['txt'], base);
+      if (picked.err) throw new Error('dialog');
+      file = picked.data;
+      if (!file) return; // cancelled
+    } catch (e) {
+      file = path.join(dir, base); // no save dialog available: save next to the project
+    }
+    if (!/\.txt$/i.test(file)) file += '.txt';
+    try {
+      fs.writeFileSync(file, text, 'utf8');
+      toast('התמלול נשמר: ' + path.basename(file));
+    } catch (e) {
+      toast('שמירת הקובץ נכשלה: ' + e.message);
+    }
+  });
+}
+
 function seek(seconds) {
   Premiere.call('setPlayhead', [seconds], function (err) { if (err) toast('לא ניתן להזיז את הסמן'); });
 }
@@ -184,9 +233,14 @@ function transcribe() {
   if (busy) return;
   if (!sequenceInfo || !sequenceInfo.sequence) return toast('פתח סיקוונס בטיימליין');
   var useInOut = settings.source === 'inout';
-  if (useInOut && !sequenceInfo.hasInOut) return toast('סמן In ו-Out בטיימליין');
+  if (useInOut && !sequenceInfo.hasInOut) {
+    // Marks around the whole sequence (or none) mean the same as the whole sequence.
+    useInOut = false;
+    toast(inOutHint());
+  }
   if (!checkWhisper()) return toast('קודם צריך להוריד את מודל התמלול');
 
+  var sequenceAtStart = currentSequence();
   setBusy(true);
   setProgress(5, 'מייצא אודיו מפרמייר…');
   // Let the progress bar paint before Premiere blocks on the export
@@ -202,6 +256,7 @@ function transcribe() {
           if (err) return fail(err);
           state.words = words;
           state.offset = audio.offset;
+          state.sequence = sequenceAtStart;
           Editor.reset();
           rebuildCaptions();
           setBusy(false);
@@ -261,7 +316,10 @@ function bindSettings() {
 function checkPremiere() {
   if (busy) return;
   Premiere.call('getSequenceInfo', [], function (err, info) {
+    var previousId = sequenceInfo && sequenceInfo.id;
     sequenceInfo = err ? null : info;
+    // Tools that show the open sequence's tracks refresh when another sequence is opened.
+    if (sequenceInfo && sequenceInfo.id && sequenceInfo.id !== previousId) document.dispatchEvent(new CustomEvent('sequencechange'));
     if (err) return setStatus('premiere', false, 'אין חיבור לפרמייר');
     if (!info.sequence) return setStatus('premiere', false, 'פתח סיקוונס בטיימליין');
     var text = 'סיקוונס: ' + info.sequence;
@@ -313,6 +371,8 @@ document.getElementById('btn-transcribe').addEventListener('click', transcribe);
 document.getElementById('btn-improve').addEventListener('click', improve);
 document.getElementById('btn-apply').addEventListener('click', applyToPremiere);
 document.getElementById('btn-download').addEventListener('click', downloadModel);
+document.getElementById('btn-export-times').addEventListener('click', function () { exportTranscript(true); });
+document.getElementById('btn-export-text').addEventListener('click', function () { exportTranscript(false); });
 
 Editor.init({ state: state, settings: settings, onSeek: seek });
 bindSettings();

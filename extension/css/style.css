@@ -147,3 +147,4 @@ input[type=range]:disabled { opacity: .35; }
 .reel-hook { margin: 6px 0 2px; font-style: italic; }
 .reel-seg { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; border-top: 1px solid var(--border); font-size: 12px; }
 .reel-text { flex: 1; line-height: 1.5; }
+.export-row { margin-top: 8px; }

@@ -69,12 +69,17 @@ var SilenceTool = (function () {
     if (busy) return;
     if (!sequenceInfo || !sequenceInfo.sequence) return toast('פתח סיקוונס בטיימליין');
     var useInOut = opts.source === 'inout';
-    if (useInOut && !sequenceInfo.hasInOut) return toast('סמן In ו-Out בטיימליין');
+    if (useInOut && !sequenceInfo.hasInOut) {
+      // Marks around the whole sequence (or none) mean the same as the whole sequence.
+      useInOut = false;
+      toast(inOutHint());
+    }
     var model = Platform.model(opts.language);
     if (opts.protectWords && !fs.existsSync(model.path)) {
       return toast('להגנה על מילים צריך את מודל ' + model.name + '. הורד אותו בכלי הכתוביות, או כבה את ההגנה');
     }
 
+    var sequence = currentSequence();
     setBusy(true);
     setProgress(5, 'מייצא אודיו מפרמייר…');
     setTimeout(function () {
@@ -98,6 +103,7 @@ var SilenceTool = (function () {
         function finish(cuts) {
           Transcriber.cleanup(audio.wav);
           result = {
+            sequence: sequence,
             threshold: detected.threshold,
             cuts: cuts.map(function (c) { return { start: c.start + audio.offset, end: c.end + audio.offset, keep: true }; })
           };
@@ -168,6 +174,7 @@ var SilenceTool = (function () {
     var btn = $('#btn-silence-cut');
     var ranges = result ? result.cuts.filter(function (c) { return c.keep; }) : [];
     if (!ranges.length) return toast('אין שקטים מסומנים לחיתוך');
+    if (!isActiveSequence(result.sequence)) return;
     if (!confirmTimer) {
       btn.textContent = 'לחץ שוב כדי לחתוך ' + ranges.length + ' שקטים (בעותק חדש)';
       confirmTimer = setTimeout(resetCutButton, 5000);

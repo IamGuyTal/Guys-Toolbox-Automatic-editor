@@ -137,10 +137,15 @@ var PodcastTool = (function () {
     if (busy) return;
     if (!sequenceInfo || !sequenceInfo.sequence) return toast('פתח סיקוונס בטיימליין');
     var useInOut = opts.source === 'inout';
-    if (useInOut && !sequenceInfo.hasInOut) return toast('סמן In ו-Out בטיימליין');
+    if (useInOut && !sequenceInfo.hasInOut) {
+      // Marks around the whole sequence (or none) mean the same as the whole sequence.
+      useInOut = false;
+      toast(inOutHint());
+    }
     var problem = validate();
     if (problem) return toast(problem);
 
+    var sequence = currentSequence();
     setBusy(true);
     var levels = [], offset = 0, duration = 0;
     var speakers = opts.speakers.slice();
@@ -171,14 +176,15 @@ var PodcastTool = (function () {
       var act = Podcast.activity(levels);
       var shots = Podcast.planShots(act, duration, {
         cameras: speakers.map(function (s) { return s.cam; }),
-        wide: opts.wide,
+        // An empty wide-shot track would show black, so it only counts if it has footage.
+        wide: opts.wide != null && tracks.video[opts.wide] && tracks.video[opts.wide].clips ? opts.wide : null,
         minShot: opts.minShot,
         minTurn: opts.minTurn,
         wideOnOverlap: opts.wideOnOverlap,
         varietyEvery: opts.varietyEvery,
         varietyLength: opts.varietyLength
       });
-      plan = { shots: shots, offset: offset, duration: duration, speakers: speakers };
+      plan = { shots: shots, offset: offset, duration: duration, speakers: speakers, sequence: sequence };
       setBusy(false);
       setProgress(null);
       render();
@@ -230,6 +236,7 @@ var PodcastTool = (function () {
   function apply() {
     if (busy) return;
     if (!plan || !plan.shots.length) return toast('קודם נתח את הסיקוונס');
+    if (!isActiveSequence(plan.sequence)) return;
     var btn = $('#btn-podcast-apply');
     if (!applyTimer) {
       btn.textContent = 'לחץ שוב כדי לערוך (בעותק חדש)';
@@ -284,6 +291,7 @@ var PodcastTool = (function () {
   // Track names come from Premiere; load them whenever the tool is opened.
   document.querySelector('.tool-card[data-tool="podcast"]').addEventListener('click', function () { loadTracks(true); });
   loadTracks(true);
+  document.addEventListener('sequencechange', function () { loadTracks(true); });
 
   return { analyze: analyze };
 })();

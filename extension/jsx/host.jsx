@@ -23,8 +23,10 @@ function getSequenceInfo() {
     var seq = app.project.activeSequence;
     if (!seq) return toJSON({ sequence: null });
     var end = Number(seq.end) / TICKS_PER_SECOND;
-    var inPoint = seq.getInPointAsTime().seconds;
+    // Premiere reports an unset mark as a large negative number: In then means the start, Out the end.
+    var inPoint = Math.max(0, seq.getInPointAsTime().seconds);
     var outPoint = seq.getOutPointAsTime().seconds;
+    if (outPoint <= 0) outPoint = end;
     var hasInOut = inPoint > 0.001 || (outPoint > 0 && outPoint < end - 0.001);
     return toJSON({
       sequence: seq.name,
@@ -103,7 +105,7 @@ function exportAudio(outPath, presetPath, useInOut) {
     if (!seq) return toJSON({ error: 'No active sequence' });
     var ENCODE_ENTIRE = 0, ENCODE_IN_TO_OUT = 1;
     var ok = seq.exportAsMediaDirect(outPath, presetPath, useInOut ? ENCODE_IN_TO_OUT : ENCODE_ENTIRE);
-    return toJSON({ ok: ok !== false, offset: useInOut ? seq.getInPointAsTime().seconds : 0 });
+    return toJSON({ ok: ok !== false, offset: useInOut ? Math.max(0, seq.getInPointAsTime().seconds) : 0 });
   } catch (e) {
     return toJSON({ error: String(e) });
   }
@@ -347,7 +349,7 @@ function exportSoloAudio(outPath, presetPath, useInOut, soloIndex) {
       seq.audioTracks[i].setMute(i === soloIndex ? 0 : 1);
     }
     var ok = seq.exportAsMediaDirect(outPath, presetPath, useInOut ? 1 : 0);
-    return toJSON({ ok: ok !== false, offset: useInOut ? seq.getInPointAsTime().seconds : 0 });
+    return toJSON({ ok: ok !== false, offset: useInOut ? Math.max(0, seq.getInPointAsTime().seconds) : 0 });
   } catch (e) {
     return toJSON({ error: String(e) });
   } finally {
@@ -423,33 +425,11 @@ function removeAllClips(seq) {
   }
 }
 
-// Pieces of a track's clips covering [a, b] (ticks, sequence time), with the matching media times.
-function mediaPieces(track, a, b) {
-  var out = [];
-  for (var i = 0; i < track.clips.numItems; i++) {
-    var c = track.clips[i];
-    var cs = Number(c.start.ticks), ce = Number(c.end.ticks);
-    if (ce <= a || cs >= b) continue;
-    var s = Math.max(a, cs), e = Math.min(b, ce);
-    var mediaIn = Number(c.inPoint.ticks) + (s - cs);
-    out.push({ item: c.projectItem, at: s - a, mediaIn: mediaIn, mediaOut: mediaIn + (e - s) });
-  }
-  return out;
-}
-
-function placePiece(track, p, atTicks, mediaType) {
-  p.item.setInPoint(String(p.mediaIn), mediaType);
-  p.item.setOutPoint(String(p.mediaOut), mediaType);
-  track.overwriteClip(p.item, String(atTicks + p.at));
-}
-
 // Builds a new sequence in a bin from pieces of the source sequence, in the given order.
-// segments: [{start, end, camera}] in source-sequence seconds.
-// With `audioTracks` (the source's mic tracks) and a camera per segment, the reel is built from
-// the media itself: the chosen camera on V1 and every mic on its own audio track.
-// Otherwise the source is nested, so edits inside it (e.g. camera switches) carry over.
-// vertical: make the reel 9:16 when the source is landscape.
-function createReel(sourceId, name, segments, vertical, binName, audioTracks) {
+// The source is nested, so everything in it carries over: colour, effects, the audio mix,
+// and which camera is on (see setReelCameras).
+// segments: [{start, end}] in source-sequence seconds. vertical: make the reel 9:16 when the source is landscape.
+function createReel(sourceId, name, segments, vertical, binName) {
   var touched = [];
   try {
     var src = findSequence(sourceId);
@@ -461,43 +441,19 @@ function createReel(sourceId, name, segments, vertical, binName, audioTracks) {
 
     var tpf = Number(src.timebase);
     function snap(sec) { return Math.round(sec * TICKS_PER_SECOND / tpf) * tpf; }
-    // In/out is set for all media types so a camera clip's linked audio is cut to the same
-    // length; the mic tracks are then overwritten on top of it.
     var ALL_MEDIA = 4;
-    var fromMedia = audioTracks && audioTracks.length && segments.length && segments[0].camera != null;
+    var item = src.projectItem;
     var at = 0;
-
     for (var i = 0; i < segments.length; i++) {
       var a = snap(segments[i].start), b = snap(segments[i].end);
       if (b - a < tpf) continue;
-      if (fromMedia) {
-        var cam = src.videoTracks[segments[i].camera];
-        var vp = cam ? mediaPieces(cam, a, b) : [];
-        for (var v = 0; v < vp.length; v++) { placePiece(reel.videoTracks[0], vp[v], at, ALL_MEDIA); touched.push(vp[v].item); }
-        for (var m = 0; m < audioTracks.length; m++) {
-          var srcAudio = src.audioTracks[audioTracks[m]];
-          var dest = reel.audioTracks[m];
-          if (!srcAudio || !dest) continue;
-          var ap = mediaPieces(srcAudio, a, b);
-          for (var k = 0; k < ap.length; k++) { placePiece(dest, ap[k], at, ALL_MEDIA); touched.push(ap[k].item); }
-        }
-      } else {
-        var item = src.projectItem;
-        item.setInPoint(String(a), ALL_MEDIA);
-        item.setOutPoint(String(b), ALL_MEDIA);
-        reel.videoTracks[0].overwriteClip(item, String(at));
-        touched.push(item);
-      }
+      item.setInPoint(String(a), ALL_MEDIA);
+      item.setOutPoint(String(b), ALL_MEDIA);
+      reel.videoTracks[0].overwriteClip(item, String(at));
+      touched.push(item);
       at += b - a;
     }
     clearInOut(touched);
-    // A camera file placed on an audio track brings its video along onto another video track;
-    // keep only the chosen camera (V1).
-    if (fromMedia) {
-      for (var t = 1; t < reel.videoTracks.numTracks; t++) {
-        for (var c = reel.videoTracks[t].clips.numItems - 1; c >= 0; c--) reel.videoTracks[t].clips[c].remove(false, false);
-      }
-    }
 
     if (vertical) {
       var st = reel.getSettings();
@@ -513,6 +469,50 @@ function createReel(sourceId, name, segments, vertical, binName, audioTracks) {
   } catch (e) {
     clearInOut(touched);
     return toJSON({ error: String(e) + (e.line ? ' (line ' + e.line + ')' : '') });
+  }
+}
+
+// Whether any clip on these camera tracks of the active sequence is switched off,
+// i.e. the cameras were already edited (by hand or by the podcast tool).
+function hasCameraEdit(cameras) {
+  try {
+    var seq = app.project.activeSequence;
+    for (var c = 0; c < cameras.length; c++) {
+      var track = seq.videoTracks[cameras[c]];
+      if (!track) continue;
+      for (var i = 0; i < track.clips.numItems; i++) if (track.clips[i].disabled) return toJSON({ edited: true });
+    }
+    return toJSON({ edited: false });
+  } catch (e) {
+    return toJSON({ error: String(e) });
+  }
+}
+
+// In the active sequence, shows only one camera: enables every clip on `keep` and
+// disables the clips on the other camera tracks. Effects and colour stay as they are.
+function showOnlyCamera(keep, cameras) {
+  try {
+    var seq = app.project.activeSequence;
+    for (var c = 0; c < cameras.length; c++) {
+      var track = seq.videoTracks[cameras[c]];
+      if (!track) continue;
+      for (var i = 0; i < track.clips.numItems; i++) track.clips[i].disabled = cameras[c] !== keep;
+    }
+    return toJSON({ ok: true });
+  } catch (e) {
+    return toJSON({ error: String(e) });
+  }
+}
+
+// Moves a sequence into a bin (by sequence id).
+function moveSequenceToBin(id, binName) {
+  try {
+    var seq = findSequence(id);
+    if (!seq) return toJSON({ error: 'missing' });
+    seq.projectItem.moveBin(findBin(app.project.rootItem, binName));
+    return toJSON({ ok: true });
+  } catch (e) {
+    return toJSON({ error: String(e) });
   }
 }
 

@@ -135,7 +135,37 @@ var Captions = (function () {
     }).join('\n');
   }
 
+  // The transcript as plain text, with the words as they were transcribed (punctuation kept).
+  // One line per sentence (or per phrase after a long pause). withTimes prefixes each line
+  // with its start time in the sequence, e.g. "[1:02:03] ".
+  function toTranscript(captions, offset, withTimes) {
+    var words = [];
+    captions.forEach(function (c) { words = words.concat(c.words); });
+    var lines = [], cur = null;
+    words.forEach(function (w, i) {
+      var prev = words[i - 1];
+      // Long unpunctuated speech still gets a new line every 40 words.
+      if (!cur || (prev && SENTENCE_END.test(prev.text)) || (prev && w.start - prev.end > 1) || cur.words.length >= 40) {
+        cur = { start: w.start, words: [] };
+        lines.push(cur);
+      }
+      cur.words.push(w.text);
+    });
+    return lines.map(function (l) {
+      var text = l.words.join(' ');
+      return withTimes ? '[' + clockTime(l.start + offset) + '] ' + text : text;
+    }).join('\n') + '\n';
+  }
+
+  function clockTime(sec) {
+    var t = Math.max(0, Math.floor(sec));
+    var h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = t % 60;
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    return (h ? h + ':' + pad(m) : m) + ':' + pad(s);
+  }
+
   return {
+    toTranscript: toTranscript,
     build: build, lines: lines, lineBreak: lineBreak, displayText: displayText,
     retime: retime, retimeAll: retimeAll, fillGaps: fillGaps, toSRT: toSRT,
     applyImprovement: applyImprovement

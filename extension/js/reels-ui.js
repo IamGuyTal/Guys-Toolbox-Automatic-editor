@@ -82,7 +82,11 @@ var ReelsTool = (function () {
     if (busy) return;
     if (!sequenceInfo || !sequenceInfo.sequence) return toast('פתח סיקוונס בטיימליין');
     var useInOut = opts.source === 'inout';
-    if (useInOut && !sequenceInfo.hasInOut) return toast('סמן In ו-Out בטיימליין');
+    if (useInOut && !sequenceInfo.hasInOut) {
+      // Marks around the whole sequence (or none) mean the same as the whole sequence.
+      useInOut = false;
+      toast(inOutHint());
+    }
     var provider = AI_PROVIDERS[settings.aiProvider];
     var key = (localStorage.getItem(provider.keyName) || '').trim();
     if (!key) return toast('הדבק מפתח ' + provider.name + ' בהגדרות ה-AI');
@@ -161,7 +165,7 @@ var ReelsTool = (function () {
         reels = Reels.resolve(res.data, us);
         // Snap each piece to the actual speech and join pieces that nearly touch.
         reels.forEach(function (r) { r.segments = Reels.mergeClose(Reels.refine(r.segments, us, levels), 0.8); });
-        context = { sourceId: info.id, sourceName: info.sequence, offset: offset, speakers: useSpeakers ? speakers : null };
+        context = { sourceId: info.id, sourceName: info.sequence, offset: offset, speakers: useSpeakers ? speakers : null, act: act };
         setBusy(false);
         setProgress(null);
         render();
@@ -230,37 +234,87 @@ var ReelsTool = (function () {
     if (busy) return;
     var chosen = (reels || []).filter(function (r) { return r.keep && r.segments.length; });
     if (!chosen.length) return toast('אין רילז מסומנים');
+    if (!isActiveSequence({ id: context.sourceId, name: context.sourceName })) return;
 
     setBusy(true);
-    var made = 0, errors = [];
-    (function next(i) {
-      if (i >= chosen.length) {
-        setBusy(false);
-        setProgress(null);
-        if (errors.length && !made) return toast('יצירת הרילז נכשלה: ' + errors[0]);
-        return toast('נוצרו ' + made + ' סיקוונסים בתיקייה Reels' + (errors.length ? ' · ' + errors.length + ' נכשלו' : ''));
-      }
-      var reel = chosen[i];
-      setProgress((i / chosen.length) * 100, 'יוצר ריל ' + (i + 1) + ' מתוך ' + chosen.length + '…');
-      var name = context.sourceName + ' - Reel ' + (i + 1) + ' - ' + safeTitle(reel.title);
-      var segs = reel.segments.map(function (s) { return { start: s.start + context.offset, end: s.end + context.offset, camera: cameraFor(s) }; });
-      var mics = context.speakers ? context.speakers.map(function (sp) { return sp.mic; }) : null;
-      Premiere.call('createReel', [context.sourceId, name, segs, opts.vertical, 'Reels', mics], function (err) {
-        if (err) errors.push(err.message); else made++;
-        next(i + 1);
-      });
-    })(0);
+    prepareSource(function (err, sourceId) {
+      if (err) return fail(err);
+      var made = 0, errors = [];
+      (function next(i) {
+        if (i >= chosen.length) {
+          setBusy(false);
+          setProgress(null);
+          if (errors.length && !made) return toast('יצירת הרילז נכשלה: ' + errors[0]);
+          return toast('נוצרו ' + made + ' סיקוונסים בתיקייה Reels' + (errors.length ? ' · ' + errors.length + ' נכשלו' : ''));
+        }
+        var reel = chosen[i];
+        setProgress(20 + (i / chosen.length) * 80, 'יוצר ריל ' + (i + 1) + ' מתוך ' + chosen.length + '…');
+        var name = context.sourceName + ' - Reel ' + (i + 1) + ' - ' + safeTitle(reel.title);
+        var segs = reel.segments.map(function (s) { return { start: s.start + context.offset, end: s.end + context.offset }; });
+        Premiere.call('createReel', [sourceId, name, segs, opts.vertical, 'Reels'], function (err) {
+          if (err) errors.push(err.message); else made++;
+          next(i + 1);
+        });
+      })(0);
+    });
   }
 
-  // Which camera a piece shows: the interviewee's in "interviewee" focus, otherwise the
-  // camera of whoever speaks in that piece. null when there is no podcast setup (nested source).
-  function cameraFor(seg) {
+  // The sequence the reels are cut from. Reels nest it, so its colour, effects and audio mix
+  // carry over. With a podcast setup, a copy is made first ("(reels source)") so the camera
+  // can be chosen without touching the user's sequence:
+  // - focus on the interviewee: only their camera is on;
+  // - focus on everyone: an existing camera edit is kept; otherwise cameras follow the speaker.
+  function prepareSource(cb) {
     var sp = context.speakers;
-    if (!sp) return null;
-    var guest = sp[Math.min(opts.guest, sp.length - 1)];
-    var who = opts.focus === 'all' && seg.speaker >= 0 ? sp[seg.speaker] : guest;
-    var cam = who && who.cam != null ? who.cam : guest.cam;
-    return cam == null ? null : cam;
+    var cams = sp ? sp.map(function (s) { return s.cam; }).filter(function (c) { return c != null; }) : [];
+    if (!cams.length) return cb(null, context.sourceId);
+
+    setProgress(5, 'מכין עותק של הסיקוונס לרילז…');
+    SequenceCopy.make(' (reels source)', function (err, pair) {
+      if (err) return cb(err);
+      function ready(err) {
+        if (err) return cb(err);
+        Premiere.call('moveSequenceToBin', [pair.copy.id, 'Reels'], function () { cb(null, pair.copy.id); });
+      }
+      if (opts.focus !== 'all') {
+        var guest = sp[Math.min(opts.guest, sp.length - 1)];
+        if (guest.cam == null) return ready();
+        return Premiere.call('showOnlyCamera', [guest.cam, cams], ready);
+      }
+      Premiere.call('hasCameraEdit', [cams], function (err, res) {
+        if (err) return cb(err);
+        if (res.edited || !context.act) return ready();
+        Premiere.call('getTracks', [], function (err, tracks) {
+          // A wide shot only counts if its track has footage; otherwise it would show black.
+          var wide = podcastWide();
+          if (err || wide == null || !tracks.video[wide] || !tracks.video[wide].clips) wide = null;
+          followSpeakers(wide);
+        });
+      });
+      function followSpeakers(wide) {
+        var shots = Podcast.planShots(context.act, context.act.length * 0.01, {
+          cameras: sp.map(function (s) { return s.cam; }),
+          wide: wide,
+          minShot: 2,
+          minTurn: 1.2,
+          wideOnOverlap: true,
+          varietyEvery: 0,
+          varietyLength: 4
+        });
+        if (!shots.length) return ready();
+        var allCams = cams.slice();
+        if (wide != null && allCams.indexOf(wide) < 0) allCams.push(wide);
+        var abs = shots.map(function (s) { return { start: s.start + context.offset, end: s.end + context.offset, camera: s.camera }; });
+        Premiere.call('applyMulticam', [abs, allCams], ready);
+      }
+    });
+  }
+
+  function podcastWide() {
+    try {
+      var w = JSON.parse(localStorage.getItem('podcastSettings') || '{}').wide;
+      return w == null ? null : w;
+    } catch (e) { return null; }
   }
 
   bind();
